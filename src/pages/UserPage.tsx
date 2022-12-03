@@ -44,18 +44,16 @@ import Scrollbar from "../components/scrollbar";
 // sections
 import { UserListHead, UserListToolbar } from "../sections/@dashboard/user";
 // mock
-// import USERLIST from "../_mock/user";
 
 import * as UserService from "../hooks/user";
-import * as UniversityService from "../hooks/university";
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: "name", label: "Name", alignRight: false },
-  { id: "school", label: "School", alignRight: false },
+  { id: "fullname", label: "Name", alignRight: false },
+  { id: "email", label: "Email", alignRight: false },
+  { id: "phone", label: "Phone", alignRight: false },
   { id: "role", label: "Role", alignRight: false },
-  { id: "isVerified", label: "Verified", alignRight: false },
   { id: "status", label: "Status", alignRight: false },
   { id: "" },
 ];
@@ -136,7 +134,7 @@ export default function UserPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const [universityDataSource, setUniversityDataSource] = useState([]);
+  // const [universityDataSource, setUniversityDataSource] = useState([]);
   const [userDataSource, setUserDataSource] = useState([]);
 
   const [isCreate, setIsCreate] = useState(false);
@@ -177,7 +175,7 @@ export default function UserPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = userDataSource.map((n) => n.id);
+      const newSelecteds = userDataSource.map((n) => n._id);
       setSelected(newSelecteds);
       return;
     }
@@ -215,7 +213,7 @@ export default function UserPage() {
   };
   const handleDeleteRow = async () => {
     setIsDelete(true);
-    await UserService.deleteUser(currRowFocus.id);
+    await UserService.deleteUser(currRowFocus._id);
     setOpen(null);
     setCurrRowFocus(null);
   };
@@ -236,7 +234,7 @@ export default function UserPage() {
       selected
     );
     setUserDataSource(
-      userDataSource.filter((item) => !selected.includes(item.id))
+      userDataSource.filter((item) => !selected.includes(item._id))
     );
     setSelected([]);
     console.log(userDataSource);
@@ -268,9 +266,8 @@ export default function UserPage() {
       if (!value) return;
       value.isVerified = value.verified;
       value.id = faker.datatype.uuid();
-      value.avatarUrl = `/assets/images/avatars/avatar_${
-        userDataSource.length + 1
-      }.jpg`;
+      value.avatarUrl = `/assets/images/avatars/avatar_${userDataSource.length + 1
+        }.jpg`;
       if (!currRowFocus) {
         const payload = {
           universityId: parseInt(value.school, 10),
@@ -305,21 +302,14 @@ export default function UserPage() {
   });
 
   useEffect(() => {
-    const getUniversityList = async () => {
-      const result = await UniversityService.fetchUniversity();
-      setUniversityDataSource(result?.data);
-    };
-
     const getUserList = async () => {
       const result = await UserService.fetchUser();
       setUserDataSource(result?.data);
-
       setIsCreate(false);
       setIsUpdate(false);
       setIsDelete(false);
     };
 
-    getUniversityList();
     getUserList();
   }, [isCreate, isUpdate, isDelete]);
 
@@ -343,6 +333,7 @@ export default function UserPage() {
             variant="contained"
             onClick={handleOpenModal}
             startIcon={<Iconify icon="eva:plus-fill" />}
+            disabled={true}
           >
             New User
           </Button>
@@ -357,125 +348,138 @@ export default function UserPage() {
           />
 
           {/* <Scrollbar> */}
-            <TableContainer sx={{ minWidth: 800 }}>
-              <Table>
-                <UserListHead
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={userDataSource.length}
-                  numSelected={selected.length}
-                  onRequestSort={handleRequestSort}
-                  onSelectAllClick={handleSelectAllClick}
-                />
-                <TableBody>
-                  {userDataSource.map((row) => {
-                    const {
-                      id,
-                      name,
-                      role,
-                      status,
-                      school,
-                      universityId,
-                      avatarUrl,
-                      isVerified,
-                    } = row;
-                    const selectedUser = selected.indexOf(id) !== -1;
+          <TableContainer sx={{ minWidth: 800 }}>
+            <Table>
+              <UserListHead
+                order={order}
+                orderBy={orderBy}
+                headLabel={TABLE_HEAD}
+                rowCount={userDataSource.length}
+                numSelected={selected.length}
+                onRequestSort={handleRequestSort}
+                onSelectAllClick={handleSelectAllClick}
+              />
+              <TableBody>
+                {userDataSource.map((row, index) => {
+                  const {
+                    _id,
+                    fullname,
+                    email,
+                    phone,
+                    role,
+                    status,
+                    avatarUrl,
+                    isVerified,
+                  } = row;
+                  const selectedUser = selected.indexOf(_id) !== -1;
 
-                    return (
-                      <TableRow
-                        hover
-                        key={id}
-                        tabIndex={-1}
-                        role="checkbox"
-                        selected={selectedUser}
-                      >
-                        <TableCell padding="checkbox">
-                          <Checkbox
-                            checked={selectedUser}
-                            onChange={(event) => handleClick(event, id)}
-                          />
-                        </TableCell>
+                  return (
+                    <TableRow
+                      hover
+                      key={index}
+                      tabIndex={-1}
+                      role="checkbox"
+                      selected={selectedUser}
+                    >
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={selectedUser}
+                          onChange={(event) => handleClick(event, _id)}
+                        />
+                      </TableCell>
 
-                        <TableCell component="th" scope="row" padding="none">
-                          <Stack
-                            direction="row"
-                            alignItems="center"
-                            spacing={2}
-                          >
-                            <Avatar alt={name} src={avatarUrl} />
-                            <Typography variant="subtitle2" noWrap>
-                              {name}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
-
-                        <TableCell align="left">
-                          {universityDataSource.find(
-                            (item) => item.id === universityId
-                          )?.name || "-"}
-                        </TableCell>
-
-                        <TableCell align="left">{role}</TableCell>
-
-                        <TableCell align="left">
-                          {isVerified ? "Yes" : "No"}
-                        </TableCell>
-
-                        <TableCell align="left">
-                          <Label color={!status ? "error" : "success"}>
-                            {sentenceCase(status ? "active" : "banned")}
-                          </Label>
-                        </TableCell>
-
-                        <TableCell align="right">
-                          <IconButton
-                            size="large"
-                            color="inherit"
-                            onClick={(e) => handleOpenMenu(e, row)}
-                          >
-                            <Iconify icon={"eva:more-vertical-fill"} />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
-
-                {isNotFound && (
-                  <TableBody>
-                    <TableRow>
-                      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <Paper
-                          sx={{
-                            textAlign: "center",
-                          }}
+                      <TableCell component="th" scope="row" padding="none">
+                        <Stack
+                          direction="row"
+                          alignItems="center"
+                          spacing={2}
                         >
-                          <Typography variant="h6" paragraph>
-                            Not found
+                          <Avatar alt={fullname} src={avatarUrl} />
+                          <Typography variant="subtitle2" noWrap>
+                            {fullname}
                           </Typography>
+                        </Stack>
+                      </TableCell>
 
-                          <Typography variant="body2">
-                            No results found for &nbsp;
-                            <strong>&quot;{filterName}&quot;</strong>.
-                            <br /> Try checking for typos or using complete
-                            words.
-                          </Typography>
-                        </Paper>
+                      <TableCell align="left">
+                        {/* {universityDataSource.find(
+                          (item) => item.id === universityId
+                        )?.name || "-"} */}
+                        {email}
+                      </TableCell>
+
+                      <TableCell align="left">{phone}</TableCell>
+                      <TableCell align="left">{role === 0 ? "Admin" : "User"}</TableCell>
+
+                      {/* <TableCell align="left">
+                        {isVerified ? "Yes" : "No"}
+                      </TableCell> */}
+
+                      <TableCell align="left">
+                        <Label color={!status ? "error" : "success"}>
+                          {
+                            (() => {
+                              switch (status) {
+                                case 0:
+                                  return sentenceCase("banned");
+                                case 1:
+                                  return sentenceCase("active");
+                                default:
+                                  return sentenceCase("Unknown");
+                              }
+                            })()
+                          }
+                        </Label>
+                      </TableCell>
+
+                      <TableCell align="right">
+                        <IconButton
+                          size="large"
+                          color="inherit"
+                          onClick={(e) => handleOpenMenu(e, row)}
+                        >
+                          <Iconify icon={"eva:more-vertical-fill"} />
+                        </IconButton>
                       </TableCell>
                     </TableRow>
-                  </TableBody>
+                  );
+                })}
+                {emptyRows > 0 && (
+                  <TableRow style={{ height: 53 * emptyRows }}>
+                    <TableCell colSpan={6} />
+                  </TableRow>
                 )}
-              </Table>
-            </TableContainer>
+              </TableBody>
+
+              {isNotFound && (
+                <TableBody>
+                  <TableRow>
+                    <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                      <Paper
+                        sx={{
+                          textAlign: "center",
+                        }}
+                      >
+                        <Typography variant="h6" paragraph>
+                          Not found
+                        </Typography>
+
+                        <Typography variant="body2">
+                          No results found for &nbsp;
+                          <strong>&quot;{filterName}&quot;</strong>.
+                          <br /> Try checking for typos or using complete
+                          words.
+                        </Typography>
+                      </Paper>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              )}
+            </Table>
+          </TableContainer>
           {/* </Scrollbar> */}
 
-          <TablePagination
+          {/* <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
             count={userDataSource.length}
@@ -483,7 +487,7 @@ export default function UserPage() {
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
-          />
+          /> */}
         </Card>
       </Container>
 
@@ -505,10 +509,10 @@ export default function UserPage() {
           },
         }}
       >
-        <MenuItem onClick={handleEditRow}>
+        {/* <MenuItem onClick={handleEditRow}>
           <Iconify icon={"eva:edit-fill"} sx={{ mr: 2 }} />
           Edit
-        </MenuItem>
+        </MenuItem> */}
 
         <MenuItem sx={{ color: "error.main" }} onClick={handleDeleteRow}>
           <Iconify icon={"eva:trash-2-outline"} sx={{ mr: 2 }} />
@@ -541,7 +545,7 @@ export default function UserPage() {
               value={formik.values.name}
               onChange={formik.handleChange}
               error={formik.touched.name && Boolean(formik.errors.name)}
-              // helperText={formik.touched.name && formik.errors.name}
+            // helperText={formik.touched.name && formik.errors.name}
             />
             {/* <TextField
               fullWidth
@@ -567,15 +571,15 @@ export default function UserPage() {
                 label="School"
                 type="school"
                 error={formik.touched.school && Boolean(formik.errors.school)}
-                // helperText={formik.touched.status && formik.errors.status}
+              // helperText={formik.touched.status && formik.errors.status}
               >
-                {universityDataSource.map(({ name, id }) => {
+                {/* {universityDataSource.map(({ name, id }) => {
                   return (
                     <MenuItem key={id} value={id}>
                       {name}
                     </MenuItem>
                   );
-                })}
+                })} */}
                 {/* <MenuItem value={'active'}>Active</MenuItem>
                 <MenuItem value={'banned'}>Banned</MenuItem> */}
                 {/* <MenuItem value={2}>Thirty</MenuItem> */}
@@ -591,7 +595,7 @@ export default function UserPage() {
               value={formik.values.role}
               onChange={formik.handleChange}
               error={formik.touched.role && Boolean(formik.errors.role)}
-              // helperText={formik.touched.role && formik.errors.role}
+            // helperText={formik.touched.role && formik.errors.role}
             />
             <FormControl>
               <InputLabel id="demo-simple-select-label">Status</InputLabel>
@@ -605,7 +609,7 @@ export default function UserPage() {
                 label="Status"
                 type="status"
                 error={formik.touched.status && Boolean(formik.errors.status)}
-                // helperText={formik.touched.status && formik.errors.status}
+              // helperText={formik.touched.status && formik.errors.status}
               >
                 <MenuItem value={"active"}>Active</MenuItem>
                 <MenuItem value={"banned"}>Banned</MenuItem>
@@ -622,7 +626,7 @@ export default function UserPage() {
               value={formik.values.verified}
               onChange={formik.handleChange}
               error={formik.touched.verified && Boolean(formik.errors.verified)}
-              // helperText={formik.touched.verified && formik.errors.verified}
+            // helperText={formik.touched.verified && formik.errors.verified}
             />
           </Box>
         </DialogContent>

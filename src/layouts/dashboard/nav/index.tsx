@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useMsal } from '@azure/msal-react';
 // @mui
@@ -15,6 +15,7 @@ import Scrollbar from '../../../components/scrollbar';
 import NavSection from '../../../components/nav-section';
 //
 import navConfig from './config';
+import { AuthContext } from '../../../context/AuthContext';
 
 // ----------------------------------------------------------------------
 
@@ -40,6 +41,7 @@ export default function Nav({ openNav, onCloseNav }) {
 
   const isDesktop = useResponsive('up', 'lg', null);
   const { instance, accounts } = useMsal();
+  const { user } = useContext(AuthContext)
 
   useEffect(() => {
     if (openNav) {
@@ -66,11 +68,11 @@ export default function Nav({ openNav, onCloseNav }) {
 
             <Box sx={{ ml: 2 }}>
               <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                {accounts[0]?.name || '-'}
+                {user?.fullname || '-'}
               </Typography>
 
               <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                {account.role}
+                {user?.role === 0 ? "Admin" : "User"}
               </Typography>
             </Box>
           </StyledAccount>

@@ -94,11 +94,11 @@ export default function LoginPage() {
             </Typography>
 
             <Stack direction="row" spacing={2}>
-              <Button fullWidth size="large" color="inherit" variant="outlined">
+              <Button fullWidth size="large" color="inherit" variant="outlined" disabled={true}>
                 <Iconify icon="eva:facebook-fill" color="#1877F2" width={22} height={22} />
               </Button>
 
-              <Button fullWidth size="large" color="inherit" variant="outlined">
+              <Button fullWidth size="large" color="inherit" variant="outlined" disabled={true}>
                 <Iconify icon="eva:twitter-fill" color="#1C9CEA" width={22} height={22} />
               </Button>
             </Stack>

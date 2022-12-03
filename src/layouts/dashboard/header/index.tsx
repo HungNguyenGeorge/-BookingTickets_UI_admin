@@ -52,7 +52,7 @@ export default function Header({ onOpenNav }) {
   return (
     <StyledRoot>
       <StyledToolbar>
-        {/* <IconButton
+        <IconButton
           onClick={onOpenNav}
           sx={{
             mr: 1,
@@ -61,7 +61,7 @@ export default function Header({ onOpenNav }) {
           }}
         >
           <Iconify icon="eva:menu-2-fill" />
-        </IconButton> */}
+        </IconButton>
 
         <Searchbar />
         <Box sx={{ flexGrow: 1 }} />

@@ -1,33 +1,44 @@
 import axios from 'axios';
 
-export const fetchUser= async () => {
-    const API = `${process.env.REACT_APP_API_ENDPOINT_USER}/student/all`
 
-    const result= await axios.get(API)
+const sLocalUser = localStorage.getItem("user");
+const localUser = JSON.parse(sLocalUser)
+
+const headerOpts = {
+    headers: {
+        'Authorization': `Bearer ${localUser?.apiToken}`
+    }
+}
+
+
+export const fetchUser = async () => {
+    const API = `${import.meta.env.VITE_BASE_URL}/users`
+
+    const result = await axios.get(API, headerOpts)
 
     return result;
 }
 
-export const createUser= async (payload) => {
-    const API = `${process.env.REACT_APP_API_ENDPOINT_USER}/student`
+export const createUser = async (payload) => {
+    const API = `${import.meta.env.VITE_BASE_URL}/users`
 
-    const result= await axios.post(API, payload)
-
-    return result;
-}
-
-export const updateUser= async (id, payload) => {
-    const API = `${process.env.REACT_APP_API_ENDPOINT_USER}/student/${id}`
-
-    const result= await axios.put(API, payload)
+    const result = await axios.post(API, payload, headerOpts)
 
     return result;
 }
 
-export const deleteUser= async (id) => {
-    const API = `${process.env.REACT_APP_API_ENDPOINT_USER}/student/${id}`
+export const updateUser = async (id, payload) => {
+    const API = `${import.meta.env.VITE_BASE_URL}/users/${id}`
 
-    const result= await axios.delete(API)
+    const result = await axios.put(API, payload, headerOpts)
+
+    return result;
+}
+
+export const deleteUser = async (id) => {
+    const API = `${import.meta.env.VITE_BASE_URL}/users/${id}`
+
+    const result = await axios.delete(API, headerOpts)
 
     return result;
 }
