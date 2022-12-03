@@ -14,7 +14,7 @@ import { AuthContext } from './context/AuthContext';
 export default function Router() {
 
   const { user } = useContext(AuthContext)
-  console.log("🚀 ~ file: routes.tsx:18 ~ Router ~ user", user)
+
   const navigate = useNavigate();
   const routes = useRoutes(
     user && user.role === 0 ?
