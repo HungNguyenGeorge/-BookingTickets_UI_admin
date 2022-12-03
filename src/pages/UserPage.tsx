@@ -327,7 +327,7 @@ export default function UserPage() {
           mb={5}
         >
           <Typography variant="h4" gutterBottom>
-            User
+            USERS
           </Typography>
           <Button
             variant="contained"

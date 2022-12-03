@@ -1,18 +1,26 @@
 import axios from 'axios';
 import { useContext } from 'react';
 
-const sLocalUser = localStorage.getItem("user");
-const localUser = JSON.parse(sLocalUser)
+export const getTicketsByEvent = async (payload) => {
+    const API = `${import.meta.env.VITE_BASE_URL}/tickets?event=${payload.eventId}`
+    const result = await axios.get(API)
 
-const headerOpts = {
-    headers: {
-        'Authorization': `Bearer ${localUser?.apiToken}`
-    }
+    return result;
 }
 
-export const getTicketsByEvent = async (payload) => {
-    const API = `${import.meta.env.VITE_BASE_URL}/api/tickets?event=${payload.eventId}`
-    const result = await axios.get(API, headerOpts)
+
+
+export const createTicket = async ({ event, name, description, price, total_quantity, available_quantity }) => {
+    const orderData = {
+        event,
+        name,
+        description,
+        price,
+        total_quantity,
+        available_quantity
+    }
+    const API = `${import.meta.env.VITE_BASE_URL}/tickets`
+    const result = await axios.post(API, orderData)
 
     return result;
 }

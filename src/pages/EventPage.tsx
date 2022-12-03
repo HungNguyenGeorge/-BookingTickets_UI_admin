@@ -55,6 +55,8 @@ import { fDate } from "../utils/formatTime";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
 import { LoadingButton } from "@mui/lab";
 
+import { TicketsTable, TicketCreateModal } from "../sections/@dashboard/ticket";
+
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
@@ -156,10 +158,30 @@ export default function UserPage() {
   const [isFirstLoad, setIsFirstLoad] = useState(true);
 
   const [openModal, setOpenModal] = useState(false);
+
+  const [openModalTickets, setOpenModalTickets] = useState(false);
+
+  const [openModalAddTicket, setOpenModalAddTicket] = useState(false);
+
   const handleOpenModal = () => setOpenModal(true);
+
+
+
   const handleCloseModal = () => {
     setOpenModal(false);
     formik.handleReset(null);
+    setCurrRowFocus(null);
+  };
+
+
+  const handleCloseModalTickets = () => {
+    setOpenModalTickets(false);
+    setCurrRowFocus(null);
+  };
+
+
+  const handleCloseModalAddTicket = () => {
+    setOpenModalAddTicket(false);
     setCurrRowFocus(null);
   };
 
@@ -212,15 +234,18 @@ export default function UserPage() {
     setSelected(newSelected);
   };
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
   const handleEditRow = () => {
     setOpenModal(true);
-    currRowFocus.school = currRowFocus.universityId;
-    currRowFocus.verified = currRowFocus.verify;
-    currRowFocus.status = currRowFocus.status ? "active" : "banned";
     formik.setValues(currRowFocus);
+    setOpen(null);
+  };
+
+  const handleShowTickets = () => {
+    setOpenModalTickets(true);
+    setOpen(null);
+  };
+  const handleShowAddTicket = () => {
+    setOpenModalAddTicket(true);
     setOpen(null);
   };
   const handleDeleteRow = async () => {
@@ -233,11 +258,6 @@ export default function UserPage() {
       console.log("🚀 ~ file: EventPage.tsx:222 ~ handleDeleteRow ~ error", error)
 
     }
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setPage(0);
-    setRowsPerPage(parseInt(event.target.value, 10));
   };
 
   const handleFilterByName = (event) => {
@@ -527,15 +547,18 @@ export default function UserPage() {
           <Iconify icon={"eva:edit-fill"} sx={{ mr: 2 }} />
           Edit
         </MenuItem>
-        <MenuItem onClick={handleEditRow}>
+        <MenuItem onClick={handleShowTickets}>
           <Iconify icon={"ion:ticket-outline"} sx={{ mr: 2 }} />
           Tickets
+        </MenuItem>
+        <MenuItem onClick={handleShowAddTicket}>
+          <Iconify icon={"material-symbols:bookmark-add-rounded"} sx={{ mr: 2 }} />
+          Add Ticket
         </MenuItem>
         <MenuItem onClick={handleEditRow}>
           <Iconify icon={"ic:baseline-local-grocery-store"} sx={{ mr: 2 }} />
           Reservations
         </MenuItem>
-
         <MenuItem sx={{ color: "error.main" }} onClick={handleDeleteRow}>
           <Iconify icon={"eva:trash-2-outline"} sx={{ mr: 2 }} />
           Delete
@@ -627,19 +650,15 @@ export default function UserPage() {
                 />
               </Stack>
             </LocalizationProvider>
-
-
-
-
             <TextField
               fullWidth
-              id="verified"
-              name="verified"
-              label="Verified"
-              type="verified"
-              value={formik.values.verified}
+              id="published"
+              name="published"
+              label="Published"
+              type="text"
+              value={formik.values.published}
               onChange={formik.handleChange}
-              error={formik.touched.verified && Boolean(formik.errors.verified)}
+              error={formik.touched.published && Boolean(formik.errors.published)}
             />
           </Box>
         </DialogContent>
@@ -649,6 +668,19 @@ export default function UserPage() {
           </LoadingButton>
           <Button onClick={handleCloseModal}>Close</Button>
         </DialogActions>
+      </Dialog>
+      <Dialog fullWidth={true} maxWidth="xl" open={openModalTickets} onClose={handleCloseModalTickets}>
+        <DialogTitle>
+          Tickets
+        </DialogTitle>
+        <DialogContent>
+          <TicketsTable event={currRowFocus} />
+        </DialogContent>
+        <DialogActions>
+        </DialogActions>
+      </Dialog>
+      <Dialog fullWidth={false} maxWidth="lg" open={openModalAddTicket} onClose={handleCloseModalAddTicket}>
+        <TicketCreateModal event={currRowFocus} onSuccess={handleCloseModalAddTicket} />
       </Dialog>
     </>
   );
