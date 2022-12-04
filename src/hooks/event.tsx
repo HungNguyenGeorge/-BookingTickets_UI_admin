@@ -8,7 +8,7 @@ export const getAllEvents = async () => {
 }
 
 export const createEvent = async ({ name, slug, description, poster, startDate, endDate, published }) => {
-    const orderData = {
+    const eventData = {
         name,
         slug,
         description,
@@ -18,15 +18,24 @@ export const createEvent = async ({ name, slug, description, poster, startDate, 
         published
     }
     const API = `${import.meta.env.VITE_BASE_URL}/events`
-    const result = await axios.post(API, orderData)
+    const result = await axios.post(API, eventData)
 
     return result;
 }
 
 
-export const updateEvent = async (id, payload) => {
+export const updateEvent = async (id, { name, slug, description, poster, startDate, endDate, published }) => {
+    const eventData = {
+        name,
+        slug,
+        description,
+        poster,
+        start_date: startDate,
+        end_date: endDate,
+        published
+    }
     const API = `${import.meta.env.VITE_BASE_URL}/events/${id}`
-    const result = await axios.put(API, payload)
+    const result = await axios.put(API, eventData)
 
     return result;
 }
