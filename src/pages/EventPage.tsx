@@ -55,8 +55,7 @@ import { fDate } from "../utils/formatTime";
 import { DesktopDatePicker } from "@mui/x-date-pickers";
 import { LoadingButton } from "@mui/lab";
 
-import { TicketsTable, TicketCreateModal } from "../sections/@dashboard/ticket";
-import ReservationsTable from "../sections/@dashboard/ticket/reservationsTable";
+import { TicketsTable, TicketCreateModal, ReservationsTable } from "../sections/@dashboard/ticket";
 
 // ----------------------------------------------------------------------
 
