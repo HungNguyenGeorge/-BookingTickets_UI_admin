@@ -26,3 +26,12 @@ export const createOrder = async ({ event, ticket, totalPrice, quantity, status 
 
     return result;
 }
+
+
+export const getReservationsByEvent = async (payload) => {
+    const API = `${import.meta.env.VITE_BASE_URL}/orders?event=${payload.eventId}`
+    const result = await axios.get(API)
+
+    return result;
+}
+

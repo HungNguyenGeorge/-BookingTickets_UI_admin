@@ -3,6 +3,7 @@ import { format, getTime, formatDistanceToNow } from 'date-fns';
 // ----------------------------------------------------------------------
 
 export function fDate(date: any, newFormat: any) {
+  if (isNaN(new Date(date).getTime())) return;
   const fm = newFormat || 'dd MMM yyyy';
 
   return date ? format(new Date(date), fm) : '';

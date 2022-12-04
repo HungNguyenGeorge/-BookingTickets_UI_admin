@@ -56,6 +56,7 @@ import { DesktopDatePicker } from "@mui/x-date-pickers";
 import { LoadingButton } from "@mui/lab";
 
 import { TicketsTable, TicketCreateModal } from "../sections/@dashboard/ticket";
+import ReservationsTable from "../sections/@dashboard/ticket/reservationsTable";
 
 // ----------------------------------------------------------------------
 
@@ -161,6 +162,8 @@ export default function UserPage() {
 
   const [openModalTickets, setOpenModalTickets] = useState(false);
 
+  const [openModalReservations, setOpenModalReservations] = useState(false);
+
   const [openModalAddTicket, setOpenModalAddTicket] = useState(false);
 
   const handleOpenModal = () => setOpenModal(true);
@@ -176,6 +179,11 @@ export default function UserPage() {
 
   const handleCloseModalTickets = () => {
     setOpenModalTickets(false);
+    setCurrRowFocus(null);
+  };
+
+  const handleCloseModalReservations = () => {
+    setOpenModalReservations(false);
     setCurrRowFocus(null);
   };
 
@@ -244,6 +252,12 @@ export default function UserPage() {
     setOpenModalTickets(true);
     setOpen(null);
   };
+
+  const handleShowReservations = () => {
+    setOpenModalReservations(true);
+    setOpen(null);
+  };
+
   const handleShowAddTicket = () => {
     setOpenModalAddTicket(true);
     setOpen(null);
@@ -267,7 +281,7 @@ export default function UserPage() {
 
   const handlePublished = async (event) => {
     try {
-      await EventService.updateEvent(event._id, { published: !event.published });
+      await EventService.updateEvent(event._id, { ...event, published: !event.published });
       setIsUpdate(true);
     } catch (error) {
       console.log("🚀 ~ file: EventPage.tsx:222 ~ handleDeleteRow ~ error", error)
@@ -555,7 +569,7 @@ export default function UserPage() {
           <Iconify icon={"material-symbols:bookmark-add-rounded"} sx={{ mr: 2 }} />
           Add Ticket
         </MenuItem>
-        <MenuItem onClick={handleEditRow}>
+        <MenuItem onClick={handleShowReservations}>
           <Iconify icon={"ic:baseline-local-grocery-store"} sx={{ mr: 2 }} />
           Reservations
         </MenuItem>
@@ -681,6 +695,16 @@ export default function UserPage() {
       </Dialog>
       <Dialog fullWidth={false} maxWidth="lg" open={openModalAddTicket} onClose={handleCloseModalAddTicket}>
         <TicketCreateModal event={currRowFocus} onSuccess={handleCloseModalAddTicket} />
+      </Dialog>
+      <Dialog fullWidth={true} maxWidth="xl" open={openModalReservations} onClose={handleCloseModalReservations}>
+        <DialogTitle>
+          Reservations
+        </DialogTitle>
+        <DialogContent>
+          <ReservationsTable event={currRowFocus} />
+        </DialogContent>
+        <DialogActions>
+        </DialogActions>
       </Dialog>
     </>
   );
