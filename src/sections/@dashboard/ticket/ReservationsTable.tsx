@@ -1,34 +1,19 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 // @mui
-import { Link, Stack, TextField, Container, Typography, styled, RadioGroup, FormControl, FormControlLabel, FormLabel, Radio, Box, Skeleton, Checkbox, IconButton, Paper, Switch, Table, TableBody, TableCell, TableContainer, TableRow } from '@mui/material';
+import { Link, Stack, TextField, Container, Typography, styled, RadioGroup, FormControl, FormControlLabel, FormLabel, Radio, Box, Skeleton, Checkbox, IconButton, Paper, Switch, Table, TableBody, TableCell, TableContainer, TableRow, CircularProgress } from '@mui/material';
 
-import * as Tickets from "../../../hooks/ticket";
 import * as Orders from "../../../hooks/order";
-import { LoadingButton } from '@mui/lab';
 
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { orderBy } from 'lodash';
-import Iconify from '../../../components/iconify';
 import { fDate } from '../../../utils/formatTime';
 import TicketListHead from './TicketListHead';
 import { format, formatISO } from 'date-fns';
 import { sentenceCase } from 'change-case';
 import Label from '../../../components/label';
 
-const MySwal = withReactContent(Swal)
 
 // ----------------------------------------------------------------------
-
-const StyledContent = styled('div')(({ theme }) => ({
-    maxWidth: 480,
-    margin: 'auto',
-    minHeight: '100vh',
-    display: 'flex',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    padding: theme.spacing(12, 0),
-}));
 
 const TABLE_HEAD = [
     { id: "name", label: "Customer", alignRight: false },
@@ -48,11 +33,14 @@ export default function ReservationsTable({ event }) {
 
     const [openModalCreate, setOpenModalCreate] = useState(false);
 
+    const [isLoading, setIsLoading] = useState(true);
+
     useEffect(() => {
         const getData = async () => {
             try {
                 const res = await Orders.getReservationsByEvent({ eventId: _id })
-                setReservationDataSource(res.data)
+                setReservationDataSource(res.data);
+                setIsLoading(false);
             } catch (err) {
                 console.log("🚀 ~ file: LoginForm.tsx:37 ~ handleClick ~ err", err)
             }
@@ -125,6 +113,16 @@ export default function ReservationsTable({ event }) {
                                 </TableRow>
                             );
                         })}
+                        {
+                            isLoading && (
+
+                                <TableRow style={{ height: 53 }}>
+                                    <TableCell align="center" colSpan={12} sx={{ py: 3 }}>
+                                        <CircularProgress />
+                                    </TableCell>
+                                </TableRow>
+                            )
+                        }
                         {reservationDataSource.length <= 0 && (
                             <TableRow style={{ height: 53 * reservationDataSource.length }}>
                                 <TableCell colSpan={6} />
@@ -132,7 +130,7 @@ export default function ReservationsTable({ event }) {
                         )}
                     </TableBody>
 
-                    {reservationDataSource.length <= 0 && (
+                    {reservationDataSource.length <= 0 && !isLoading && (
                         <TableBody>
                             <TableRow>
                                 <TableCell align="center" colSpan={12} sx={{ py: 3 }}>

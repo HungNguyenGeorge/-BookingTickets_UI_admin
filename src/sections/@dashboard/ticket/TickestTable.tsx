@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 // @mui
-import { Link, Stack, TextField, Container, Typography, styled, RadioGroup, FormControl, FormControlLabel, FormLabel, Radio, Box, Skeleton, Checkbox, IconButton, Paper, Switch, Table, TableBody, TableCell, TableContainer, TableRow } from '@mui/material';
+import { Link, Stack, TextField, Container, Typography, styled, RadioGroup, FormControl, FormControlLabel, FormLabel, Radio, Box, Skeleton, Checkbox, IconButton, Paper, Switch, Table, TableBody, TableCell, TableContainer, TableRow, CircularProgress } from '@mui/material';
 
 import * as Tickets from "../../../hooks/ticket";
 import * as Orders from "../../../hooks/order";
@@ -46,11 +46,14 @@ export default function TicketsTable({ event }) {
 
     const [openModalCreate, setOpenModalCreate] = useState(false);
 
+    const [isLoading, setIsLoading] = useState(true);
+
     useEffect(() => {
         const getData = async () => {
             try {
                 const res = await Tickets.getTicketsByEvent({ eventId: _id })
-                setTicketDataSource(res.data)
+                setTicketDataSource(res.data);
+                setIsLoading(false);
             } catch (err) {
                 console.log("🚀 ~ file: LoginForm.tsx:37 ~ handleClick ~ err", err)
             }
@@ -111,6 +114,16 @@ export default function TicketsTable({ event }) {
                                 </TableRow>
                             );
                         })}
+                        {
+                            isLoading && (
+
+                                <TableRow style={{ height: 53 }}>
+                                    <TableCell align="center" colSpan={12} sx={{ py: 3 }}>
+                                        <CircularProgress />
+                                    </TableCell>
+                                </TableRow>
+                            )
+                        }
                         {ticketDataSource.length <= 0 && (
                             <TableRow style={{ height: 53 * ticketDataSource.length }}>
                                 <TableCell colSpan={6} />
